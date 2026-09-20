@@ -4,8 +4,12 @@ import ProbabilityChart from './ProbabilityChart.jsx'
 import ConfidenceCard from './ConfidenceCard.jsx'
 
 export default function ResultCard({ result }) {
-  const { prediction, fake_probability, real_probability } = result
-  const isFake = prediction.toLowerCase().includes('fake')
+ const prediction = result?.prediction || 'Unknown'
+
+const fake_probability = Number(result?.fake_probability || 0)
+
+const real_probability = Number(result?.real_probability || 0)
+const isFake = prediction.toLowerCase().includes('fake')
 
   return (
     <motion.div

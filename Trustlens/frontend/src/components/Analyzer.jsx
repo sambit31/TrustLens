@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Newspaper, FileUp, Link2, Sparkles, Eraser, SearchCheck, ScanEye } from 'lucide-react'
-import { analyzeNews } from '../services/api.js'
+import { analyzeNews, analyzeDocument } from '../services/api.js'
 import LoadingState from './LoadingState.jsx'
 import ErrorState from './ErrorState.jsx'
 import ResultCard from './ResultCard.jsx'
@@ -30,6 +30,7 @@ const examples = [
 export default function Analyzer() {
   const [activeTab, setActiveTab] = useState('text')
   const [text, setText] = useState('')
+  const [selectedFile, setSelectedFile] = useState(null)
   const [status, setStatus] = useState('idle') // idle | loading | success | error
   const [result, setResult] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
@@ -55,6 +56,38 @@ export default function Analyzer() {
       }
     }
   }
+
+  const handleDocumentAnalyze = async () => {
+  if (!selectedFile) {
+    setStatus('error')
+    setErrorMsg('Please select a PDF or DOCX file first.')
+    return
+  }
+
+  setStatus('loading')
+  setErrorMsg('')
+
+  try {
+    const data = await analyzeDocument(selectedFile)
+
+    if (data.error) {
+      setStatus('error')
+      setErrorMsg(data.error)
+      return
+    }
+
+    setResult(data)
+    setStatus('success')
+  } catch (err) {
+    setStatus('error')
+
+    if (err.code === 'ECONNABORTED' || err.message === 'Network Error' || !err.response) {
+      setErrorMsg('Make sure the TrustLens backend is running.')
+    } else {
+      setErrorMsg('The document could not be analyzed. Please try again.')
+    }
+  }
+}
 
   const handleClear = () => {
     setText('')
@@ -90,15 +123,88 @@ export default function Analyzer() {
           ))}
         </div>
 
-        {activeTab !== 'text' ? (
-          <div className="flex flex-col items-center justify-center text-center py-16 px-4 border-2 border-dashed border-slate-200 rounded-2xl">
-            <ScanEye className="w-9 h-9 text-slate-300" />
-            <p className="mt-4 font-display font-semibold text-ink">Coming Soon</p>
-            <p className="mt-1 text-sm text-muted max-w-xs">
-              {activeTab === 'document' ? 'Document' : 'URL'} analysis is planned for a future release of TrustLens.
-            </p>
-          </div>
-        ) : (
+        {activeTab === 'document' ? (
+  <div className="flex flex-col items-center justify-center text-center py-12 px-4 border-2 border-dashed border-slate-200 rounded-2xl">
+
+    <div className="w-14 h-14 rounded-2xl bg-primary/8 flex items-center justify-center">
+      <FileUp className="w-7 h-7 text-primary" />
+    </div>
+
+    <p className="mt-4 font-display font-semibold text-ink">
+      Upload a Document
+    </p>
+
+    <p className="mt-1 text-sm text-muted max-w-sm">
+      Upload a PDF document and TrustLens will extract its text and analyze it.
+    </p>
+
+    <label
+      htmlFor="document-upload"
+      className="mt-6 cursor-pointer inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary via-secondary to-accent text-white font-semibold px-6 py-3.5 shadow-[0_10px_24px_rgba(91,95,239,0.3)] hover:-translate-y-0.5 transition-all"
+    >
+      <FileUp className="w-4 h-4" />
+      Choose PDF
+    </label>
+
+    <input
+      id="document-upload"
+      type="file"
+      accept=".pdf"
+      className="hidden"
+      onChange={(e) => {
+        const file = e.target.files?.[0]
+
+        if (file) {
+          setSelectedFile(file)
+          setResult(null)
+          setStatus('idle')
+          setErrorMsg('')
+        }
+      }}
+    />
+
+    {selectedFile && (
+      <div className="mt-5 w-full max-w-sm rounded-xl bg-slate-50 border border-slate-200 p-4 text-left">
+
+        <p className="text-sm font-semibold text-ink truncate">
+          {selectedFile.name}
+        </p>
+
+        <p className="mt-1 text-xs text-muted">
+          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+        </p>
+
+      </div>
+    )}
+
+    <button
+      onClick={handleDocumentAnalyze}
+      disabled={!selectedFile || status === 'loading'}
+      className="mt-4 w-full max-w-sm inline-flex items-center justify-center gap-2 rounded-full bg-ink text-white font-semibold px-6 py-3.5 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <SearchCheck className="w-4 h-4" />
+      {status === 'loading' ? 'Analyzing Document...' : 'Analyze Document'}
+    </button>
+
+  </div>
+
+) : activeTab === 'url' ? (
+
+  <div className="flex flex-col items-center justify-center text-center py-16 px-4 border-2 border-dashed border-slate-200 rounded-2xl">
+
+    <Link2 className="w-9 h-9 text-slate-300" />
+
+    <p className="mt-4 font-display font-semibold text-ink">
+      URL Analysis Coming Soon
+    </p>
+
+    <p className="mt-1 text-sm text-muted max-w-xs">
+      Paste a news article URL and TrustLens will analyze it in a future release.
+    </p>
+
+  </div>
+
+)  : (
           <>
             <label htmlFor="analyzer-textarea" className="sr-only">
               Article, headline, or statement to analyze
