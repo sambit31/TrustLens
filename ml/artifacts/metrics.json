@@ -1,0 +1,78 @@
+{
+  "accuracy": 0.9789556753912929,
+  "precision": 0.9792906450845037,
+  "recall": 0.9825650823978983,
+  "f1": 0.9809251311397235,
+  "roc_auc": 0.9970318382592716,
+  "confusion_matrix": [
+    [
+      3329,
+      87
+    ],
+    [
+      73,
+      4114
+    ]
+  ],
+  "train_size": 30412,
+  "test_size": 7603,
+  "top_fake_words": [
+    "just",
+    "gop",
+    "obama",
+    "america",
+    "like",
+    "watch",
+    "hillary",
+    "president trump",
+    "president obama",
+    "fact",
+    "video",
+    "didn",
+    "american",
+    "isn",
+    "mr",
+    "know",
+    "doesn",
+    "actually",
+    "rep",
+    "right",
+    "really",
+    "sen",
+    "isis",
+    "americans",
+    "press"
+  ],
+  "top_real_words": [
+    "said",
+    "president donald",
+    "wednesday",
+    "tuesday",
+    "thursday",
+    "friday",
+    "monday",
+    "minister",
+    "republican",
+    "nov",
+    "spokesman",
+    "said statement",
+    "presidential",
+    "told",
+    "democratic",
+    "reporters",
+    "told reporters",
+    "trump said",
+    "president barack",
+    "percent",
+    "comment",
+    "year",
+    "representatives",
+    "said thursday",
+    "house representatives"
+  ],
+  "leak_check": {
+    "real_probability_plain": 94.03,
+    "real_probability_with_reuters_dateline": 94.03
+  },
+  "dataset_rows_after_cleaning": 38015
+}

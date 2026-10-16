@@ -1,0 +1,14 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.0
+python-multipart>=0.0.9
+httpx>=0.27
+beautifulsoup4>=4.12
+joblib>=1.4
+pandas>=2.2
+scikit-learn>=1.5
+numpy>=1.26
+# PDF article splitting (fast, layout-aware)
+pymupdf>=1.24
+# Only needed for the debug scripts backend/test_*.py
+pdfplumber>=0.11
